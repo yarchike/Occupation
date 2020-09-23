@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Occupation</string>
+    <string name="button_idea">Жмякни меня</string>
+    <string name="base_idea">Посмотреть мультфильм;Посмотреть ужастик;Посмотреть фильм о природе</string>
+</resources>
