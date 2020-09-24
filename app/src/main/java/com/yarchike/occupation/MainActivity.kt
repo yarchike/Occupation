@@ -1,5 +1,6 @@
 package com.yarchike.occupation
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -7,7 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
-import java.util.concurrent.TimeUnit
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val list = readBase()
         var listIgnore = readIgnore()
-        val h = Handler(){
+        val h = Handler() {
             buttonIdea.setVisibility(View.VISIBLE)
             true
         }
@@ -30,24 +33,7 @@ class MainActivity : AppCompatActivity() {
                         randomInteger = (0..list.size - 1).shuffled().first().toInt()
                     } else {
                         listIgnore.add(randomInteger)
-                        try {
-                            val file = File(cacheDir, FILE_NAME)
-                            val writer = BufferedWriter(FileWriter(file))
-                            var str = ""
-                            for (i in listIgnore) {
-                                str += i.toString() + ";"
-                            }
-                            str = str.substring(0, str.length - 1)
-                            writer.write(str)
-                            writer.close()
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Ошибка записи в файл",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
+                        write(listIgnore)
                         textIdea.text = list[randomInteger]
                         break
                     }
@@ -67,8 +53,71 @@ class MainActivity : AppCompatActivity() {
             }.start()
 
         }
+        btest.setOnClickListener() {
+            /*val dateFormat = "MM/dd/yyyy HH:mm:ss"
+            var sdf = SimpleDateFormat(dateFormat)
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            var date = sdf.format(Date())*/
+            var date = Calendar.getInstance(TimeZone.getTimeZone(" UTC+0"))
+            date.add(Calendar.DAY_OF_MONTH, 1)
+            date.set(Calendar.HOUR_OF_DAY, 0)
+            date.set(Calendar.MINUTE, 0)
+            date.set(Calendar.SECOND, 0)
+            date.set(Calendar.MILLISECOND, 0)
+            val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
+            var dateString = sdf.format(date.time)
+            textIdea.text = dateString
+            getSharedPreferences(DATE_FILE, Context.MODE_PRIVATE)
+                .edit()
+                .putString(DATE_INPUT, dateString)
+                .apply()
+
+        }
+
+        button2.setOnClickListener() {
+            val dateString = getSharedPreferences(DATE_FILE, Context.MODE_PRIVATE).getString(
+                DATE_INPUT, ""
+            )
+            val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
+            val dateD = sdf.parse(dateString)
+            var date = Calendar.getInstance();
+            date.time = dateD
+            val string1 = sdf.format(date.time)
+            textView.text = dateString
+
+            val nowDate = Calendar.getInstance(TimeZone.getTimeZone(" UTC+0"))
+            val string2 = sdf.format(nowDate.time)
+            textIdea.text =  string2
+            if (date.after(nowDate)){
+                textIdea.text = "НЕ Стереть" + string1 + "---" + string2
+            }else{
+                textIdea.text ="Стереть" + string1 + "---" + string2
+            }
+        }
 
 
+    }
+    
+
+    private fun write(listIgnore: ArrayList<Int>) {
+        try {
+            val file = File(cacheDir, FILE_NAME)
+            val writer = BufferedWriter(FileWriter(file))
+            var str = ""
+            for (i in listIgnore) {
+                str += i.toString() + ";"
+            }
+            str = str.substring(0, str.length - 1)
+            writer.write(str)
+            writer.close()
+        } catch (e: Exception) {
+            Toast.makeText(
+                this@MainActivity,
+                "Ошибка записи в файл",
+                Toast.LENGTH_LONG
+            )
+                .show()
+        }
     }
 
     fun readIgnore(): ArrayList<Int> {
