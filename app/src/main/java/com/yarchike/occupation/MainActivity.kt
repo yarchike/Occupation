@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var idea = ""
         val sharedPreferences = getSharedPreferences(DATE_FILE, Context.MODE_PRIVATE)
         var listIgnore = ArrayList<Int>()
         if (DateUtil.nowDateAfterDate(sharedPreferences)) {
@@ -25,11 +26,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         val list = readBase()
+        val h2 = Handler() {
+            when (it.what.toString()) {
+                "1" -> {
+                    imageView1.setImageResource(R.mipmap.ic_launcher_round);
+                }
+                "2" -> {
+                    imageView2.setImageResource(R.mipmap.ic_launcher_round);
+                }
+                "3" -> {
+                    imageView3.setImageResource(R.mipmap.ic_launcher_round);
+                }
+                "4" -> {
+                    imageView4.setImageResource(R.mipmap.ic_launcher_round);
+                }
+                "5" -> {
+                    imageView5.setImageResource(R.mipmap.ic_launcher_round);
+                }
+                /*"6" -> {
+                    imageView6.setImageResource(R.mipmap.ic_launcher_round);
+                }*/
+                else -> {
+                    textIdea.text = idea
+                }
+
+
+            }
+
+            true
+        }
 
         val h = Handler() {
             textTimeOut.visibility = View.VISIBLE
 
             textTimeOut.text = "До следушего нажатия: " + it.what.toString()
+            //Toast.makeText(this@MainActivity, it.what.toString(), Toast.LENGTH_SHORT).show()
             if (it.what == 0) {
                 buttonIdea.visibility = View.VISIBLE
                 textTimeOut.visibility = View.INVISIBLE
@@ -39,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonIdea.setOnClickListener() {
+
             if (list.size <= listIgnore.size) {
                 Toast.makeText(this@MainActivity, "Идеи закончились", Toast.LENGTH_LONG).show()
             } else {
@@ -49,15 +81,39 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         listIgnore.add(randomInteger)
                         readAndWriteIgnore(true, listIgnore)
-                        textIdea.text = list[randomInteger]
+                        idea = list[randomInteger]
                         break
                     }
                 }
             }
-            buttonIdea.isClickable = false
-            buttonIdea.visibility = View.INVISIBLE
+            /*imageView1.setImageResource(R.mipmap.ic_launcher_round);
+            Thread.sleep(1000)
+            imageView2.setImageResource(R.mipmap.ic_launcher_round);
+            Thread.sleep(1000)
+            imageView3.setImageResource(R.mipmap.ic_launcher_round);
+            Thread.sleep(1000)
+            imageView4.setImageResource(R.mipmap.ic_launcher_round);
+            Thread.sleep(1000)
+            imageView5.setImageResource(R.mipmap.ic_launcher_round);*/
+
             Thread {
                 try {
+                    h2.sendEmptyMessage(1)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(2)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(3)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(4)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(5)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(5)
+                    Thread.sleep(1000)
+                    h2.sendEmptyMessage(6)
+                    h2.sendEmptyMessage(10)
+
+
                     h.sendEmptyMessage(3)
                     Thread.sleep(1000)
                     h.sendEmptyMessage(2)
@@ -66,11 +122,22 @@ class MainActivity : AppCompatActivity() {
                     Thread.sleep(1000)
                     h.sendEmptyMessage(0)
                     buttonIdea.setClickable(true)
-                    h.sendEmptyMessage(0)
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
             }.start()
+
+            buttonIdea.isClickable = false
+            buttonIdea.visibility = View.INVISIBLE
+
+
+            /* Thread {
+                 try {
+
+                 } catch (e: InterruptedException) {
+                     e.printStackTrace()
+                 }
+             }.start()*/
 
         }
 
@@ -79,7 +146,7 @@ class MainActivity : AppCompatActivity() {
 
     fun readAndWriteIgnore(
         write: Boolean,
-        listIgnore: ArrayList<Int> = ArrayList<Int>()
+        listIgnore: ArrayList<Int> = ArrayList<Int>(),
     ): ArrayList<Int> {
         if (write) {
             try {
