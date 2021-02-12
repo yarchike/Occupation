@@ -43,9 +43,9 @@ class MainActivity : AppCompatActivity() {
                 "5" -> {
                     imageView5.setImageResource(R.mipmap.ic_launcher_round);
                 }
-                /*"6" -> {
+                "6" -> {
                     imageView6.setImageResource(R.mipmap.ic_launcher_round);
-                }*/
+                }
                 else -> {
                     textIdea.text = idea
                 }
